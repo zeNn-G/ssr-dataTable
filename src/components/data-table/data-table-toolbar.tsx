@@ -74,10 +74,13 @@ export function DataTableToolbar<TData>({
                 />
               )
           )}
-        {isFiltered && (
+        {(isFiltered || inputValue != "") && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              table.resetColumnFilters();
+              setInputValue("");
+            }}
             className="h-8 px-2 lg:px-3"
           >
             Reset

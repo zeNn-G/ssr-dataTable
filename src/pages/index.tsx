@@ -17,7 +17,17 @@ type Props = {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { searchText, statusName } = ctx.query;
+  const { searchText, statusName, page, per_page } = ctx.query;
+
+  // Number of items per page
+  const limit = typeof per_page === "string" ? parseInt(per_page) : 10;
+
+  const offset =
+    typeof page === "string"
+      ? parseInt(page) > 0
+        ? (parseInt(page) - 1) * limit
+        : 0
+      : 0;
 
   const statuses =
     typeof statusName === "string"
@@ -28,19 +38,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { data } = await axios.post("http://localhost:3000/api/feedbacks", {
       searchText: searchText ?? null,
       statuses: statuses.length > 0 ? statuses : null,
+      pageIndex: offset,
+      pageSize: limit,
     });
 
     return {
       props: {
         feedbacks: data.feedbacks,
-        pageCount: 1,
+        pageCount: data.pageCount,
       },
     };
   } catch (error) {
     return {
       props: {
         feedbacks: {},
-        pageCount: 1,
+        pageCount: 0,
       },
     };
   }

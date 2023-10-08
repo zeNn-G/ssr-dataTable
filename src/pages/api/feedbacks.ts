@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const body = req.body;
 
-  const { searchText, statuses } = body;
+  const { searchText, statuses, pageIndex, pageSize } = body;
 
   try {
     if (searchText) {
@@ -41,11 +41,18 @@ export default async function handler(
               },
             },
           },
+          from: pageIndex,
+          size: pageSize,
         });
+
+        const count = response.body.hits.total.value;
+
+        const pageCount = Math.ceil(count / pageSize);
 
         res.status(200).json({
           message: "success",
           feedbacks: response.body.hits.hits.map((hit: any) => hit._source),
+          pageCount,
         });
       } else {
         const response = await elasticClient.search({
@@ -84,11 +91,18 @@ export default async function handler(
               },
             },
           },
+          from: pageIndex,
+          size: pageSize,
         });
+
+        const count = response.body.hits.total.value;
+
+        const pageCount = Math.ceil(count / pageSize);
 
         res.status(200).json({
           message: "success",
           feedbacks: response.body.hits.hits.map((hit: any) => hit._source),
+          pageCount,
         });
       }
     }
@@ -109,11 +123,18 @@ export default async function handler(
             },
           },
         },
+        from: pageIndex,
+        size: pageSize,
       });
+
+      const count = response.body.hits.total.value;
+
+      const pageCount = Math.ceil(count / pageSize);
 
       res.status(200).json({
         message: "success",
         feedbacks: response.body.hits.hits.map((hit: any) => hit._source),
+        pageCount,
       });
     }
 
@@ -124,12 +145,18 @@ export default async function handler(
           match_all: {},
         },
       },
+      from: pageIndex,
+      size: pageSize,
     });
+
+    const count = response.body.hits.total.value;
+
+    const pageCount = Math.ceil(count / pageSize);
 
     res.status(200).json({
       message: "success",
       feedbacks: response.body.hits.hits.map((hit: any) => hit._source),
-      pageCount: 1,
+      pageCount,
     });
   } catch (error) {
     console.log(error);

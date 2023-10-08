@@ -33,7 +33,7 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     accessorKey: "username",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Task" />
+      <DataTableColumnHeader column={column} title="Username" />
     ),
     cell: ({ row }) => (
       <div className="w-[80px]">{row.getValue("username")}</div>

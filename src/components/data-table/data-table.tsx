@@ -171,7 +171,6 @@ export function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     manualPagination: true,
-    manualSorting: true,
     manualFiltering: true,
   });
 
