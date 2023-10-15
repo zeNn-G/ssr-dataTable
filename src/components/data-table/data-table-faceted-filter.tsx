@@ -20,6 +20,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/router";
+import { useQueryString } from "@/hooks/use-create-query-string";
+import { usePathname } from "next/navigation";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
@@ -36,8 +39,35 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
+  const router = useRouter();
+  const pathname = usePathname();
   const facets = column?.getFacetedUniqueValues();
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
+  const selectedValues = new Set<string>(column?.getFilterValue() as string[]);
+  const createQueryString = useQueryString(); // Use your custom hook to create the query string
+
+  const handleOptionSelect = (option: { label: string; value: string }) => {
+    if (selectedValues.has(option.value)) {
+      selectedValues.delete(option.value);
+    } else {
+      selectedValues.add(option.value);
+    }
+
+    // If there are selected values, set the filter value; otherwise, clear it.
+    const filterValues = Array.from(selectedValues);
+    column?.setFilterValue(filterValues.length ? filterValues : undefined);
+
+    // Generate the new URL with the updated query parameters using your custom hook.
+
+    const queryString = createQueryString({
+      ...router.query,
+      [column?.id || ""]: filterValues.length ? filterValues.join(".") : null,
+    });
+
+    // Construct the new URL based on the existing URL and the modified query parameters.
+    const newUrl = `${router.pathname}?${queryString}`;
+
+    router.push(newUrl);
+  };
 
   return (
     <Popover>
@@ -91,17 +121,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 return (
                   <CommandItem
                     key={option.value}
-                    onSelect={() => {
-                      if (isSelected) {
-                        selectedValues.delete(option.value);
-                      } else {
-                        selectedValues.add(option.value);
-                      }
-                      const filterValues = Array.from(selectedValues);
-                      column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
-                      );
-                    }}
+                    onSelect={() => handleOptionSelect(option)} // Call the new function
                   >
                     <div
                       className={cn(
@@ -131,7 +151,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                    onSelect={() => {
+                      column?.setFilterValue(undefined);
+                      const params = new URLSearchParams(router.query as any);
+                      params.delete(column?.id || "");
+                      router.push({
+                        pathname: router.pathname,
+                        query: params.toString(),
+                      });
+                    }}
                     className="justify-center text-center"
                   >
                     Clear filters

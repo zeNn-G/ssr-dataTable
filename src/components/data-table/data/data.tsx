@@ -17,6 +17,23 @@ export const statuses = [
   },
 ];
 
+export const categories = [
+  {
+    value: "Sorun Bildir",
+    label: "Sorun Bildir",
+    icon: Flame,
+  },
+  {
+    value: "Öneri",
+    label: "Öneri",
+    icon: X,
+  },
+  {
+    value: "İstek",
+    label: "İstek",
+  },
+];
+
 export const priorities = [
   {
     label: "Low",

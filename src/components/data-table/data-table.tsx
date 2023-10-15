@@ -60,6 +60,7 @@ export function DataTable<TData, TValue>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Create query string
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString());
@@ -71,15 +72,14 @@ export function DataTable<TData, TValue>({
           newSearchParams.set(key, String(value));
         }
       }
-
       return newSearchParams.toString();
     },
     [searchParams]
   );
 
   // Search params
-  const page = searchParams?.get("page") ?? "1";
-  const per_page = searchParams?.get("per_page") ?? "10";
+  const page = router.query.page ?? "1";
+  const per_page = router.query.per_page ?? "10";
 
   // Handle server-side pagination
   const [{ pageIndex, pageSize }, setPagination] =
@@ -114,39 +114,6 @@ export function DataTable<TData, TValue>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize]);
 
-  const filterableColumnFilters = columnFilters.filter((filter) => {
-    return filterableColumns.find((column) => column.id === filter.id);
-  });
-
-  React.useEffect(() => {
-    for (const column of filterableColumnFilters) {
-      if (typeof column.value === "object" && Array.isArray(column.value)) {
-        router.push(
-          `${pathname}?${createQueryString({
-            page: 1,
-            [column.id]: column.value.join("."),
-          })}`
-        );
-      }
-    }
-
-    //@ts-ignore
-    for (const key of searchParams.keys()) {
-      if (
-        filterableColumns.find((column) => column.id === key) &&
-        !filterableColumnFilters.find((column) => column.id === key)
-      ) {
-        router.push(
-          `${pathname}?${createQueryString({
-            page: 1,
-            [key]: null,
-          })}`
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(filterableColumnFilters)]);
-
   const table = useReactTable({
     data,
     columns,
@@ -176,7 +143,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} filterableColumns={filterableColumns} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

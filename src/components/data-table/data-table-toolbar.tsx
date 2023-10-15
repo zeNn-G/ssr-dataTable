@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTableViewOptions } from "./data-table-view-options";
 
-import { priorities, statuses } from "./data/data";
+import { categories, priorities, statuses } from "./data/data";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useQueryString } from "@/hooks/use-create-query-string";
@@ -33,11 +33,6 @@ export function DataTableToolbar<TData>({
   const debouncedInputValue = useDebounce(inputValue, 500); // Debounce the input value
 
   React.useEffect(() => {
-    const newQueryString = createQueryString({
-      page: null,
-      searchText: debouncedInputValue || null,
-    });
-
     router.push(
       `${pathname}?${createQueryString({
         page: 1,
@@ -62,24 +57,24 @@ export function DataTableToolbar<TData>({
             options={statuses}
           />
         )}
-        {filterableColumns.length > 0 &&
-          filterableColumns.map(
-            (column) =>
-              table.getColumn(column.id ? String(column.id) : "") && (
-                <DataTableFacetedFilter
-                  key={String(column.id)}
-                  column={table.getColumn(column.id ? String(column.id) : "")}
-                  title={column.title}
-                  options={column.options}
-                />
-              )
-          )}
+        {table.getColumn("categoryName") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("categoryName")}
+            title="Category"
+            options={categories}
+          />
+        )}
         {(isFiltered || inputValue != "") && (
           <Button
             variant="ghost"
             onClick={() => {
-              table.resetColumnFilters();
+              const page = router.query.page ?? "1";
+              const per_page = router.query.per_page ?? "10";
+
               setInputValue("");
+
+              table.resetColumnFilters();
+              router.push(`${pathname}?page=${page}&per_page=${per_page}`);
             }}
             className="h-8 px-2 lg:px-3"
           >

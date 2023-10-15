@@ -5,7 +5,9 @@ export type Option = {
 };
 
 export type Feedback = {
-  username: string;
+  user: {
+    username: string;
+  };
   feedbackText: string;
   statusName: string;
   categoryName: string;

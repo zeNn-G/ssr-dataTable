@@ -6,11 +6,6 @@ import { columns } from "@/components/data-table/columns";
 import { DataTable } from "@/components/data-table/data-table";
 import { Feedback } from "@/types";
 
-import {
-  priorities as prioritiesMap,
-  statuses as statusesMap,
-} from "@/components/data-table/data/data";
-
 type Props = {
   feedbacks: Feedback[];
   pageCount: number;
@@ -59,24 +54,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 const Home = ({ feedbacks, pageCount }: Props) => {
-  return (
-    <DataTable
-      data={feedbacks}
-      pageCount={pageCount}
-      columns={columns}
-      filterableColumns={[
-        {
-          id: "statusName",
-          title: "Status",
-          options: statusesMap.map((status) => ({
-            label: status.label,
-            value: status.value,
-            icon: status.icon,
-          })),
-        },
-      ]}
-    />
-  );
+  return <DataTable data={feedbacks} pageCount={pageCount} columns={columns} />;
 };
 
 export default Home;

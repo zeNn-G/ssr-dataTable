@@ -13,7 +13,9 @@ export default async function handler(
     await elasticClient.index({
       index: "search_test",
       body: {
-        username,
+        user: {
+          username,
+        },
         feedbackText,
         statusName,
         categoryName,

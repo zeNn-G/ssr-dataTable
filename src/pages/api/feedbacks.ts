@@ -22,7 +22,7 @@ export default async function handler(
                     should: [
                       {
                         regexp: {
-                          username: `.*${searchText}*`,
+                          "user.username": `.*${searchText}*`,
                         },
                       },
                       {
@@ -71,7 +71,7 @@ export default async function handler(
                       should: [
                         {
                           regexp: {
-                            username: `.*${searchText}*`,
+                            "user.username": `.*${searchText}*`,
                           },
                         },
                         {

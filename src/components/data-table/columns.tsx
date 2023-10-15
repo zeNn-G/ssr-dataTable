@@ -31,13 +31,17 @@ export const columns: ColumnDef<Feedback>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "username",
+    accessorKey: "user",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Username" />
     ),
-    cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue("username")}</div>
-    ),
+    cell: ({ row }) => {
+      const user: {
+        username: string;
+      } = row.getValue("user");
+
+      return <div className="w-[80px]">{user.username}</div>;
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -86,7 +90,7 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     accessorKey: "categoryName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Kategori" />
     ),
     cell: ({ row }) => {
       return (
